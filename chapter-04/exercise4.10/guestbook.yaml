@@ -13,4 +13,4 @@ spec:
     spec:
       containers:
       - name: guestbook
-        image: acme.com/guestbook:yyyyyy
+        image: acme.com/guestbook:zzzzzz
