@@ -1,0 +1,33 @@
+Instalamos un nodo K3s en debian4 a modo de entorno prod
+curl -sfL https://get.k3s.io | sh -s - --disable traefik --write-kubeconfig-mode 644 --node-external-ip=192.168.100.13 --advertise-address=192.168.100.13
+
+
+Habilitamos nginx como ingress controller (https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-manifests/)
+$ git clone https://github.com/nginxinc/kubernetes-ingress/
+$ cd kubernetes-ingress/deployments
+$ git checkout v1.12.0
+
+kubectl apply -f common/ns-and-sa.yaml
+kubectl apply -f rbac/rbac.yaml
+kubectl apply -f rbac/ap-rbac.yaml
+
+kubectl apply -f common/default-server-secret.yaml
+kubectl apply -f common/nginx-config.yaml
+kubectl apply -f common/ingress-class.yaml
+
+$ kubectl apply -f common/crds/k8s.nginx.org_virtualservers.yaml
+$ kubectl apply -f common/crds/k8s.nginx.org_virtualserverroutes.yaml
+$ kubectl apply -f common/crds/k8s.nginx.org_transportservers.yaml
+$ kubectl apply -f common/crds/k8s.nginx.org_policies.yaml
+
+kubectl apply -f common/crds/k8s.nginx.org_globalconfigurations.yaml
+
+
+$ kubectl apply -f common/crds/appprotect.f5.com_aplogconfs.yaml
+$ kubectl apply -f common/crds/appprotect.f5.com_appolicies.yaml
+$ kubectl apply -f common/crds/appprotect.f5.com_apusersigs.yaml
+
+kubectl apply -f daemon-set/nginx-ingress.yaml
+
+cambiamos 80-->81 y 443--> 444 en service/loadbalancer.yaml
+kubectl apply -f service/loadbalancer.yaml

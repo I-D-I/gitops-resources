@@ -1,0 +1,15 @@
+# apiVersion: k8s.nginx.org/v1
+# kind: VirtualServer
+# metadata:
+#   name: sample
+#   namespace: prod
+# spec:
+#   host: sample.debian.local
+#   upstreams:
+#   - name: sample
+#     service: sample
+#     port: 80
+#   routes:
+#   - path: /
+#     action:
+#       pass: sample

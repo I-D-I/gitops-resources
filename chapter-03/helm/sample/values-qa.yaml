@@ -1,0 +1,45 @@
+# Default values for sample.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+namespaceOverride: qa
+
+replicaCount: 1
+
+image:
+  repository: 192.168.100.13:5000/gitops/gitops-a
+  tag: "8183f166797182beda07d5dced8267940338c151"
+  pullPolicy: IfNotPresent
+
+nameOverride: "sample"
+fullnameOverride: "sample"
+
+podAnnotations: {}
+
+environmentVars: [
+  {
+    name: "DEBUG",
+    value: "true"
+  }
+]
+
+deploy:
+  port: 8080
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: sample.debian.local
+      paths:
+      - path: /
+        backend:
+          serviceName: sample
+          servicePort: 80
+  tls: []

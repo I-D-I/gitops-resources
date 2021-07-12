@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sample
+  namespace: gitops
+data:
+  index.html: <b>hello world!</b>

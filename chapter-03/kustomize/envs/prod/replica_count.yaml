@@ -1,0 +1,6 @@
+apiVersion: apps/v1          #A
+kind: Deployment
+metadata:
+  name: sample-app
+spec:
+  replicas: 3

@@ -1,0 +1,42 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: gitops-cronscript
+  namespace: gitops
+data:
+  cronscript.sh: |
+    #!/bin/sh
+    IMAGE_NAME=$(kubectl get deployment gitops-a -n gitops -o=jsonpath='{$.spec.template.spec.containers[:1].image}')
+    echo "IMAGE_NAME" $IMAGE_NAME
+    git clone http://gines:gincol01@192.168.100.13/gitops/gitops-a-config.git /tmp/gitops-a
+    sed -i -r "s#^(\s*)(image\s*:\s*.*)#\1image: $IMAGE_NAME#" /tmp/gitops-a/k8s/*.yaml
+    kubectl apply -f /tmp/gitops-a/k8s/
+
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: gitops-cron
+  namespace: gitops
+spec:
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: gitops-serviceaccount
+          containers:
+          - name: gitops-operator
+            image: gitopsbook/example-operator:v1.0
+            command: ["/tmp/cron/cronscript.sh"]
+            volumeMounts:
+            - name: script
+              mountPath: "/tmp/cron/"
+          volumes:
+          - name: script
+            configMap:
+              name: gitops-cronscript
+              defaultMode: 0777
